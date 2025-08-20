@@ -2,13 +2,17 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from services.weapons import parse_gun_page
-from services.utils import (
-    get_wikitext_page,
-    get_category_members
+from services.discord_utils import (
+    create_embed,
+    create_wiki_view,
+    add_fields,
+    autocomplete_category
 )
+from services.utils import get_wikitext_page
 
-class WikiWeapons(commands.Cog):
-    """Commands for Fate-Trigger weapons"""
+
+class WikiWeaponsCog(commands.Cog):
+    """Commands for Fate-Trigger Weapons"""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -34,18 +38,10 @@ class WikiWeapons(commands.Cog):
             await interaction.followup.send(f"**Error:** {e}", ephemeral=True)
             return
 
-        embed = discord.Embed(title=name, color=discord.Color.green())
-        if img := data.get("image_url"):
-            embed.set_image(url=img)
-
         desc_parts = []
-
-        if manufacturer := data.get("manufacturer"):
-            desc_parts.append(f"**Manufacturer:** {manufacturer}")
-        if type_ := data.get("type"):
-            desc_parts.append(f"**Type:** {type_}")
-        if ammo := data.get("ammo"):
-            desc_parts.append(f"**Ammo:** {ammo}")
+        for key in ["manufacturer", "type", "ammo"]:
+            if val := data.get(key):
+                desc_parts.append(f"**{key.capitalize()}:** {val}")
 
         stats_map = {
             "firepower": "Firepower",
@@ -53,55 +49,35 @@ class WikiWeapons(commands.Cog):
             "range": "Range",
             "mobility": "Mobility"
         }
-
         for stat, label in stats_map.items():
             if val := data.get(stat):
                 desc_parts.append(f"**{label}:** {val}")
 
         if quote := data.get("quote"):
             desc_parts.append(f"\n*{quote}*")
-
         if attachments := data.get("attachments"):
             desc_parts.append(f"\n**Attachments:** {', '.join(attachments)}")
 
-        embed.description = "\n".join(desc_parts)
-        embed.set_footer(
-            text="Fate Trigger Wiki",
-            icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtzFCeJ--WoEj9W11uVrtgIBH6BwhMfH4jBw&s"
+        description = "\n".join(desc_parts)
+
+        embed = create_embed(
+            title=name,
+            description=description,
+            image_url=data.get("image_url"),
+            color=discord.Color.green()
         )
 
-        view = discord.ui.View(timeout=300)
-        wiki_url = f"https://fate-trigger.fandom.com/wiki/{name.replace(' ', '_')}"
-        edit_url = f"{wiki_url}?veaction=editsource"
+        info_fields = ["Origin", "Capacity", "Notes"]
+        add_fields(embed, data, info_fields)
 
-        view.add_item(discord.ui.Button(
-            label="View more on Wiki",
-            url=wiki_url,
-            style=discord.ButtonStyle.link,
-            emoji='<:fandom_logo:1407326050501005403>'
-        ))
-        view.add_item(discord.ui.Button(
-            label="Edit Page",
-            url=edit_url,
-            style=discord.ButtonStyle.link,
-            emoji="✏️"
-        ))
+        view = create_wiki_view(name)
 
         await interaction.followup.send(embed=embed, view=view)
 
     @weapon.autocomplete("name")
     async def weapon_autocomplete(self, interaction: discord.Interaction, current: str):
-        try:
-            pages = get_category_members("Weapons", use_cache=True)
-            if current:
-                filtered_pages = [p for p in pages if current.lower() in p.lower()]
-                filtered_pages.sort(key=lambda x: (x.lower().find(current.lower()), len(x)))
-            else:
-                filtered_pages = sorted(pages)
-            return [app_commands.Choice(name=p, value=p) for p in filtered_pages[:25]]
-        except Exception:
-            return []
+        return await autocomplete_category("Weapons", current)
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(WikiWeapons(bot))
+    await bot.add_cog(WikiWeaponsCog(bot))

@@ -1,17 +1,32 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from services.awakeners import get_wikitext_page, parse_awakeners, get_category_members
+from services.awakeners import parse_awakeners
+from services.utils import (
+    get_wikitext_page,
+    get_category_members,
+)
+
+from services.discord_utils import (
+    create_embed,
+    create_wiki_view,
+    truncate_text,
+    add_fields,
+    autocomplete_category
+)
+
 
 class WikiAwakenersCog(commands.Cog):
-    def __init__(self, bot):
+    """Commands for Fate-Trigger Awakeners"""
+
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @app_commands.command(name="wiki-awakeners", description="Get info about an Awakener")
     @app_commands.describe(name="Select an Awakener")
     async def wiki_awakeners(self, interaction: discord.Interaction, name: str):
-        await interaction.response.defer() 
-        
+        await interaction.response.defer()
+
         try:
             wikitext = get_wikitext_page(name)
             data = parse_awakeners(wikitext, name)
@@ -19,66 +34,30 @@ class WikiAwakenersCog(commands.Cog):
             await interaction.followup.send(f"**Error:** {e}", ephemeral=True)
             return
 
-        embed = discord.Embed(
+        description = ""
+        if profile := data.get("profile"):
+            description = truncate_text(profile, page_name=name)
+            if skills := data.get("Skills"):
+                description += "\n\n**Skills:** " + ", ".join(skills)
+
+        embed = create_embed(
             title=data.get("awakener_name", name),
+            description=description,
+            image_url=data.get("image_url"),
             color=discord.Color.blue()
         )
 
-        if data.get("image_url"):
-            embed.set_image(url=data["image_url"])
-
-
-
-        profile = data.get("profile", "")
-        if profile:
-            embed.description = profile[:200] + f"...[more](https://fate-trigger.fandom.com/wiki/{name.replace(' ', '_')})"
-            embed.description += "\n\n**Skills:** " + ", ".join(data["Skills"])
-
-
         info_fields = ["Role", "Voice Actor", "Age", "Birthday", "Origin", "Height", "Hobbies"]
-        added_fields = 0
-        for field in info_fields:
-            if field in data and data[field] and added_fields < 6: 
-                embed.add_field(name=field, value=data[field], inline=True)
-                added_fields += 1
+        add_fields(embed, data, info_fields)
 
-
-        embed.set_footer(text="Fate Trigger Wiki", 
-                        icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtzFCeJ--WoEj9W11uVrtgIBH6BwhMfH4jBw&s")
-
-        view = discord.ui.View(timeout=300)
-        
-        wiki_url = f"https://fate-trigger.fandom.com/wiki/{name.replace(' ', '_')}"
-        view.add_item(discord.ui.Button(
-            label="View more on Wiki", 
-            url=wiki_url, 
-            emoji='<:fandom_logo:1407326050501005403>',
-            style=discord.ButtonStyle.link
-        ))
-        
-        edit_url = f"https://fate-trigger.fandom.com/wiki/{name.replace(' ', '_')}?veaction=editsource"
-        view.add_item(discord.ui.Button(
-            label="Edit Page", 
-            url=edit_url, 
-            emoji="✏️",
-            style=discord.ButtonStyle.link
-        ))
+        view = create_wiki_view(name)
 
         await interaction.followup.send(embed=embed, view=view)
 
     @wiki_awakeners.autocomplete("name")
     async def wiki_awakeners_autocomplete(self, interaction: discord.Interaction, current: str):
-        try:
-            pages = get_category_members("Awakeners", True)
-            if current:
-                filtered_pages = [p for p in pages if current.lower() in p.lower()]
-                filtered_pages.sort(key=lambda x: (x.lower().find(current.lower()), len(x)))
-            else:
-                filtered_pages = sorted(pages)
-            
-            return [app_commands.Choice(name=p, value=p) for p in filtered_pages[:25]]
-        except Exception:
-            return []
+        return await autocomplete_category("Awakeners", current)
 
-async def setup(bot):
+
+async def setup(bot: commands.Bot):
     await bot.add_cog(WikiAwakenersCog(bot))
