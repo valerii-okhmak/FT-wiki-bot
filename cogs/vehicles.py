@@ -2,16 +2,12 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from services.vehicles import parse_vehicle_page
-from services.discord_utils import (
-    create_embed,
-    create_wiki_view,
-    add_fields,
-    autocomplete_category
-)
-
+from services.utils import get_wikitext_page, PageNotFound
+from services.discord_utils import create_embed, create_wiki_view, add_fields, autocomplete_category
+from services.logger import log_error ,log_warning
 
 class WikiVehiclesCog(commands.Cog):
-    """Commands for Fate-Trigger Vehicles"""
+    """Commands for Vehicles"""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -19,12 +15,15 @@ class WikiVehiclesCog(commands.Cog):
     @app_commands.command(name="wiki-vehicles", description="Get info about a Vehicle")
     @app_commands.describe(name="Select a vehicle")
     async def vehicles(self, interaction: discord.Interaction, *, name: str):
-        await interaction.response.defer()
-
         try:
             data = parse_vehicle_page(name)
+        except PageNotFound:
+            await interaction.response.send_message(f"Page '{name}' not found on the wiki.", ephemeral=True)
+            log_warning(interaction.user.id, "wiki-vehicles", f"Page '{name}' not found")
+            return
         except Exception as e:
-            await interaction.followup.send(f"**Error:** {e}", ephemeral=True)
+            await interaction.response.send_message("An unexpected error occurred.", ephemeral=True)
+            log_error(interaction.user.id, "wiki-vehicles", e)
             return
 
         desc_parts = []
@@ -57,9 +56,7 @@ class WikiVehiclesCog(commands.Cog):
         info_fields = ["Origin", "Capacity", "Crew"]
         add_fields(embed, data, info_fields)
 
-        view = create_wiki_view(name)
-
-        await interaction.followup.send(embed=embed, view=view)
+        await interaction.response.send_message(embed=embed, view=create_wiki_view(name))
 
     @vehicles.autocomplete("name")
     async def vehicles_autocomplete(self, interaction: discord.Interaction, current: str):

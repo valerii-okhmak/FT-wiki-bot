@@ -15,6 +15,8 @@ async def main():
         await bot.load_extension("cogs.awakeners")
         await bot.load_extension("cogs.weapons")
         await bot.load_extension("cogs.vehicles")
+        await bot.load_extension("cogs.common")
+
         await bot.load_extension("cogs.admin")
 
         await bot.start(config.DISCORD_TOKEN)
