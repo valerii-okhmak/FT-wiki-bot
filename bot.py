@@ -12,9 +12,9 @@ async def on_ready():
 
 async def main():
     async with bot:
-        await bot.load_extension("cogs.wiki_awakeners")
-        await bot.load_extension("cogs.wiki_weapons")
-        await bot.load_extension("cogs.wiki_vehicles")
+        await bot.load_extension("cogs.awakeners")
+        await bot.load_extension("cogs.weapons")
+        await bot.load_extension("cogs.vehicles")
         await bot.load_extension("cogs.admin")
 
         await bot.start(config.DISCORD_TOKEN)
