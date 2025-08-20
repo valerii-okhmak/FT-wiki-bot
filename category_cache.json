@@ -10,5 +10,30 @@
         "Ryoin",
         "Soarwynne",
         "Xiva"
+    ],
+    "Weapons": [
+        "Adjudicator SR",
+        "Beast Buster SG",
+        "Braun SG",
+        "Cantius DMR",
+        "CL Monolith LMG",
+        "CL Rafale AR",
+        "CL-24 SR",
+        "CL-4 AR",
+        "Gladiator AR",
+        "Jackson SMG",
+        "Peregrine SMG",
+        "Perforator SMG",
+        "Planetcracker GL",
+        "Pulsar SMG",
+        "Rearguard LMG",
+        "Tempest LMG",
+        "ZK-M AR"
+    ],
+    "Vehicles": [
+        "Bucellati Scatto",
+        "Estelle AeroX",
+        "Span Armadillo",
+        "Toya Otomo"
     ]
 }
