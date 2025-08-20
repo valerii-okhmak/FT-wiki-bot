@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from services.wiki_awakeners import get_category_members, save_cache
+from services.awakeners import get_category_members
+from services.cache import save_cache
 from discord import app_commands
 
 
