@@ -1,0 +1,4 @@
+```env
+WIKI_API_URL=
+DISCORD_BOT_TOKEN=
+```
