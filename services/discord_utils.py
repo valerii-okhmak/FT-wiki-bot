@@ -1,8 +1,5 @@
 import discord
 from discord import app_commands
-from discord.ext import commands
-from services.utils import get_wikitext_page
-
 from services.utils import get_category_members
 from config import WIKI_BASE_URL
 

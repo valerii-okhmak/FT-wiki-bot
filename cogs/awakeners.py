@@ -4,7 +4,6 @@ from discord.ext import commands
 from services.awakeners import parse_awakeners
 from services.utils import (
     get_wikitext_page,
-    get_category_members,
 )
 
 from services.discord_utils import (

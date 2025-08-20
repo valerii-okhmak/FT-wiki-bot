@@ -1,10 +1,7 @@
 import re
 from services.utils import (
-    get_wikitext_page,
     get_image_url,
     clean_wikitext,
-    parse_quote,
-    get_category_members
 )
 
 

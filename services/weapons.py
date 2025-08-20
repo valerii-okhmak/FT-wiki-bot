@@ -7,7 +7,7 @@ from services.utils import (
 )
 
 def parse_gun_infobox(wikitext: str, gun_name: str) -> dict:
-    """Parse Infobox Gun including ammo name"""
+    """Parse gun Infobox"""
 
     result = {}
     infobox_pattern = r'\{\{Infobox\s+Gun(.*?)\n\}\}'
