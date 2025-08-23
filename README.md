@@ -11,7 +11,10 @@ python -m venv .venv
 ```
 3. Install dependencies:
 ```bash
-pip install -r requirements.txt
+discord.py>=2.4.0
+dotenv>=1.0.0
+requests>=2.30.0
+
 ```
 4. Create a .env file in the root directory with the following variables:
 ```bash
