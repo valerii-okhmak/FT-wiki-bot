@@ -22,8 +22,8 @@ if not logger.handlers:
     )
 
     formatter = SafeFormatter(
-        "%(asctime)s | %(levelname)s | User:%(user_id)s | Command:%(command)s | %(message)s",
-        datefmt="%Y.%m.%d %H:%M:%S"
+        "%(asctime)s | %(levelname)-8s | User:%(user_id)-10s | Command:%(command)-15s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
     )
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
