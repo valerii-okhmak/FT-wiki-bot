@@ -5,6 +5,7 @@ from services.awakeners import parse_awakeners
 from services.utils import get_wikitext_page, PageNotFound
 from services.discord_utils import create_embed, create_wiki_view, truncate_text, add_fields, autocomplete_category
 from services.logger import log_warning, log_error
+from services.channel_config import is_channel_allowed  
 
 
 class WikiAwakenersCog(commands.Cog):
@@ -16,19 +17,23 @@ class WikiAwakenersCog(commands.Cog):
     @app_commands.command(name="wiki-awakeners", description="Get info about an Awakener")
     @app_commands.describe(name="Select an Awakener")
     async def wiki_awakeners(self, interaction: discord.Interaction, name: str):
+        if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
+            await interaction.response.send_message(
+                "This command is not allowed in this channel.",
+                ephemeral=True
+            )
+            return
+        await interaction.response.defer(thinking=True, ephemeral=False)
+
         try:
             wikitext = get_wikitext_page(name)
             data = parse_awakeners(wikitext, name)
         except PageNotFound:
-            await interaction.response.send_message(
-                f"Page '{name}' not found on the wiki.", ephemeral=True
-            )
+            await interaction.followup.send(f"Page '{name}' not found on the wiki.", ephemeral=True)
             log_warning(interaction.user.id, "wiki-awakeners", f"Page '{name}' not found")
             return
         except Exception as e:
-            await interaction.response.send_message(
-                "An unexpected error occurred. Please try again later.", ephemeral=True
-            )
+            await interaction.followup.send("An unexpected error occurred. Please try again later.", ephemeral=True)
             log_error(interaction.user.id, "wiki-awakeners", e)
             return
 
@@ -50,7 +55,8 @@ class WikiAwakenersCog(commands.Cog):
 
         view = create_wiki_view(name)
 
-        await interaction.response.send_message(embed=embed, view=view)
+        await interaction.followup.send(embed=embed, view=view)
+
 
     @wiki_awakeners.autocomplete("name")
     async def wiki_awakeners_autocomplete(self, interaction: discord.Interaction, current: str):
