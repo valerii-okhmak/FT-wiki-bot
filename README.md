@@ -25,13 +25,12 @@ WIKI_API_URL=
 DISCORD_BOT_TOKEN=
 ```
 
-
 # Commands
-## Adminc ONLY commands:
+## Adminc ONLY:
 - /setup-channels <channel mentions or ALL> - Setup allowed channels for wiki commands
 - /clear_cache category:<Category Name> — Refresh cache for a category
 
-## All commands:
+## All:
 - /wiki-awakeners name:<Awakener Name> — Get information about an Awakener.
 - /wiki-items name:<Item Name> — Get description and image of an item.
 - /wiki-attachments name:<Attachment Name> — Get description and image of an attachment.
