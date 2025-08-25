@@ -10,7 +10,7 @@ def create_embed(
     title: str,
     description: str = "",
     image_url: str | None = None,
-    color: discord.Color = discord.Color.blue()
+    color: discord.Color = discord.Color.dark_grey()
 ) -> discord.Embed:
     """Create a standardized Discord embed with optional image."""
     embed = discord.Embed(title=title, description=description, color=color)

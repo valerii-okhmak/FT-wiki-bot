@@ -17,6 +17,8 @@ class WikiVehiclesCog(commands.Cog):
 
     @app_commands.command(name="wiki-vehicles", description="Get info about a Vehicle")
     @app_commands.describe(name="Select a vehicle")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def vehicles(self, interaction: discord.Interaction, *, name: str):
         if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
             await interaction.response.send_message(
@@ -24,14 +26,13 @@ class WikiVehiclesCog(commands.Cog):
                 ephemeral=True
             )
             return
-        await interaction.response.defer(thinking=True, ephemeral=False)
+        await interaction.response.defer(thinking=True)
 
         try:
             data = parse_vehicle_page(name)
         except PageNotFound:
             await interaction.followup.send(
-                f"Page '{name}' not found on the wiki.", ephemeral=True
-            )
+                f"Page '{name}' not found on the wiki.")
             log_warning(interaction.user.id, "wiki-vehicles", f"Page '{name}' not found")
             return
         except Exception as e:
@@ -65,7 +66,7 @@ class WikiVehiclesCog(commands.Cog):
             title=name,
             description=description,
             image_url=data.get("image_url"),
-            color=discord.Color.blue()
+            color=discord.Color.dark_grey()
         )
 
         info_fields = ["Origin", "Capacity", "Crew"]

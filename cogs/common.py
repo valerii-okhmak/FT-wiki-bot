@@ -14,6 +14,8 @@ class WikiCommonCog(commands.Cog):
 
     @app_commands.command(name="wiki-items", description="Get info about an Item")
     @app_commands.describe(name="Select an Item")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def items(self, interaction: discord.Interaction, *, name: str):
         if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
             await interaction.response.send_message(
@@ -46,6 +48,8 @@ class WikiCommonCog(commands.Cog):
 
     @app_commands.command(name="wiki-attachments", description="Get info about an Attachment")
     @app_commands.describe(name="Select an Attachment")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def attachments(self, interaction: discord.Interaction, *, name: str):
         if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
             await interaction.response.send_message(
@@ -77,6 +81,8 @@ class WikiCommonCog(commands.Cog):
 
     @app_commands.command(name="wiki-lore", description="Get info about Lore")
     @app_commands.describe(name="Select Lore entry")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def lore(self, interaction: discord.Interaction, *, name: str):
         if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
             await interaction.response.send_message(

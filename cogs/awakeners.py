@@ -16,6 +16,8 @@ class WikiAwakenersCog(commands.Cog):
 
     @app_commands.command(name="wiki-awakeners", description="Get info about an Awakener")
     @app_commands.describe(name="Select an Awakener")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def wiki_awakeners(self, interaction: discord.Interaction, name: str):
         if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
             await interaction.response.send_message(
@@ -47,7 +49,7 @@ class WikiAwakenersCog(commands.Cog):
             title=data.get("awakener_name", name),
             description=description,
             image_url=data.get("image_url"),
-            color=discord.Color.blue()
+            color=discord.Color.dark_grey()
         )
 
         info_fields = ["Role", "Voice Actor", "Age", "Birthday", "Origin", "Height", "Hobbies"]

@@ -24,6 +24,8 @@ class WikiWeaponsCog(commands.Cog):
 
     @app_commands.command(name="wiki-weapons", description="Get info about a Weapon")
     @app_commands.describe(name="Select a Weapon")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def weapon(self, interaction: discord.Interaction, *, name: str):
         if not is_channel_allowed(interaction.guild.id, interaction.channel.id):
             await interaction.response.send_message(
@@ -39,14 +41,12 @@ class WikiWeaponsCog(commands.Cog):
             data = parse_gun_page(name, self.attachments_wikitext)
         except PageNotFound:
             await interaction.followup.send(
-                f"Page '{name}' not found on the wiki.", ephemeral=True
-            )
+                f"Page '{name}' not found on the wiki.")
             log_warning(interaction.user.id, "wiki-weapons", f"Page '{name}' not found")
             return
         except Exception as e:
             await interaction.followup.send(
-                "An unexpected error occurred.", ephemeral=True
-            )
+                "An unexpected error occurred.")
             log_error(interaction.user.id, "wiki-weapons", e)
             return
 
@@ -76,7 +76,7 @@ class WikiWeaponsCog(commands.Cog):
             title=name,
             description=description,
             image_url=data.get("image_url"),
-            color=discord.Color.green()
+            color=discord.Color.dark_grey()
         )
 
         info_fields = ["Origin", "Capacity", "Notes"]
