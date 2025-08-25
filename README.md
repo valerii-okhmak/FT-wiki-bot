@@ -14,9 +14,9 @@ source .venv/bin/activate
 ```
 3. Install dependencies:
 ```bash
-discord.py>=2.4.0
-dotenv>=1.0.0
-requests>=2.30.0
+discord.py
+dotenv
+requests
 
 ```
 4. Create a .env file in the root directory with the following variables:
