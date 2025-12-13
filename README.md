@@ -26,7 +26,7 @@ DISCORD_BOT_TOKEN=
 ```
 
 # Commands
-## Adminc ONLY:
+## Admins ONLY:
 - /setup-channels <channel mentions or ALL> - Setup allowed channels for wiki commands
 - /clear_cache category:<Category Name> — Refresh cache for a category
 
